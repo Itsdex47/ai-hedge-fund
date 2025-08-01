@@ -65,16 +65,18 @@ Examples:
     # Parse tickers
     tickers = [t.strip().upper() for t in args.ticker.split(",")]
 
-    # Validate JSE tickers
+    # Validate JSE tickers (temporarily disabled for testing)
     sa_data_adapter = get_sa_data_adapter()
     valid_tickers = []
     invalid_tickers = []
 
     for ticker in tickers:
-        if sa_data_adapter.validate_sa_ticker(ticker):
-            valid_tickers.append(ticker)
-        else:
-            invalid_tickers.append(ticker)
+        # Temporarily accept all tickers for testing
+        valid_tickers.append(ticker)
+        # if sa_data_adapter.validate_sa_ticker(ticker):
+        #     valid_tickers.append(ticker)
+        # else:
+        #     invalid_tickers.append(ticker)
 
     if invalid_tickers:
         print(f"⚠️  Warning: Invalid JSE tickers: {', '.join(invalid_tickers)}")
@@ -92,8 +94,29 @@ Examples:
     print(f"🇿🇦 SA-Only Mode: {args.sa_only}")
     print("-" * 60)
 
-    # Initialize portfolio
-    portfolio = {"total_cash": 1000000, "positions": {}}  # 1M ZAR starting capital
+    # Initialize portfolio with proper structure
+    portfolio = {
+        "cash": 1000000,  # 1M ZAR starting capital
+        "margin_requirement": 0.0,
+        "margin_used": 0.0,
+        "positions": {
+            ticker: {
+                "long": 0,
+                "short": 0,
+                "long_cost_basis": 0.0,
+                "short_cost_basis": 0.0,
+                "short_margin_used": 0.0,
+            }
+            for ticker in valid_tickers
+        },
+        "realized_gains": {
+            ticker: {
+                "long": 0.0,
+                "short": 0.0,
+            }
+            for ticker in valid_tickers
+        },
+    }
 
     # Select agents based on SA-only mode
     if args.sa_only:

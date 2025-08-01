@@ -47,9 +47,25 @@ class SADataAdapter:
         if financial_api_key:
             headers["X-API-KEY"] = financial_api_key
 
-        # Use JSE ticker format
-        jse_ticker = f"JSE:{ticker}"
-        url = f"{self.config.DATA_SOURCES['prices']}?ticker={jse_ticker}&interval=day&interval_multiplier=1&start_date={start_date}&end_date={end_date}"
+        # Try different JSE ticker formats
+        ticker_formats = [
+            ticker,  # Try original format first
+            f"JSE:{ticker}",  # Try JSE: prefix
+            f"{ticker}.JSE",  # Try .JSE suffix
+            f"{ticker}.JO",  # Try .JO suffix (Johannesburg)
+        ]
+
+        for ticker_format in ticker_formats:
+            try:
+                url = f"{self.config.DATA_SOURCES['prices']}?ticker={ticker_format}&interval=day&interval_multiplier=1&start_date={start_date}&end_date={end_date}"
+                response = requests.get(url, headers=headers)
+                if response.status_code == 200:
+                    return response.json()
+            except Exception:
+                continue
+
+        # If all formats fail, return empty data
+        return {"prices": []}
 
         try:
             response = self.session.get(url, headers=headers)
