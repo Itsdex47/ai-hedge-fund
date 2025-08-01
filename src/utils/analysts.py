@@ -16,6 +16,7 @@ from src.agents.technicals import technical_analyst_agent
 from src.agents.valuation import valuation_analyst_agent
 from src.agents.warren_buffett import warren_buffett_agent
 from src.agents.rakesh_jhunjhunwala import rakesh_jhunjhunwala_agent
+from src.agents.sa_market_analyst import sa_market_analyst_agent, sa_regulatory_compliance_agent, sa_currency_risk_agent
 
 # Define analyst configuration - single source of truth
 ANALYST_CONFIG = {
@@ -139,10 +140,56 @@ ANALYST_CONFIG = {
         "type": "analyst",
         "order": 14,
     },
+    "sa_market_analyst": {
+        "display_name": "SA Market Analyst",
+        "description": "South African Market Specialist",
+        "investing_style": "Analyzes SA-specific market conditions including currency volatility, political risks, load shedding impact, and emerging market dynamics.",
+        "agent_func": sa_market_analyst_agent,
+        "type": "analyst",
+        "order": 15,
+    },
+    "sa_regulatory_compliance": {
+        "display_name": "SA Regulatory Compliance",
+        "description": "FSCA Compliance Specialist",
+        "investing_style": "Ensures compliance with FSCA regulations, exchange controls, foreign investment limits, and reporting requirements.",
+        "agent_func": sa_regulatory_compliance_agent,
+        "type": "analyst",
+        "order": 16,
+    },
+    "sa_currency_risk": {
+        "display_name": "SA Currency Risk",
+        "description": "ZAR Currency Risk Specialist",
+        "investing_style": "Analyzes ZAR currency risk and its impact on import/export companies, dual-listed stocks, and foreign currency denominated assets.",
+        "agent_func": sa_currency_risk_agent,
+        "type": "analyst",
+        "order": 17,
+    },
 }
 
-# Derive ANALYST_ORDER from ANALYST_CONFIG for backwards compatibility
-ANALYST_ORDER = [(config["display_name"], key) for key, config in sorted(ANALYST_CONFIG.items(), key=lambda x: x[1]["order"])]
+# Add SA agents to the analyst order
+ANALYST_ORDER = [
+    "aswath_damodaran",
+    "ben_graham",
+    "bill_ackman",
+    "cathie_wood",
+    "charlie_munger",
+    "michael_burry",
+    "peter_lynch",
+    "phil_fisher",
+    "rakesh_jhunjhunwala",
+    "stanley_druckenmiller",
+    "warren_buffett",
+    "valuation",
+    "sentiment",
+    "fundamentals",
+    "technicals",
+    "risk_manager",
+    # Add SA-specific agents
+    "sa_market_analyst",
+    "sa_regulatory_compliance",
+    "sa_currency_risk",
+    "portfolio_manager",
+]
 
 
 def get_analyst_nodes():
@@ -152,13 +199,4 @@ def get_analyst_nodes():
 
 def get_agents_list():
     """Get the list of agents for API responses."""
-    return [
-        {
-            "key": key,
-            "display_name": config["display_name"],
-            "description": config["description"],
-            "investing_style": config["investing_style"],
-            "order": config["order"]
-        }
-        for key, config in sorted(ANALYST_CONFIG.items(), key=lambda x: x[1]["order"])
-    ]
+    return [{"key": key, "display_name": config["display_name"], "description": config["description"], "investing_style": config["investing_style"], "order": config["order"]} for key, config in sorted(ANALYST_CONFIG.items(), key=lambda x: x[1]["order"])]

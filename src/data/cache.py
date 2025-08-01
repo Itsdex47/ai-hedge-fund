@@ -7,6 +7,9 @@ class Cache:
         self._line_items_cache: dict[str, list[dict[str, any]]] = {}
         self._insider_trades_cache: dict[str, list[dict[str, any]]] = {}
         self._company_news_cache: dict[str, list[dict[str, any]]] = {}
+        self._economic_indicators_cache: dict[str, dict[str, any]] = {}
+        self._fx_rates_cache: dict[str, dict[str, any]] = {}
+        self._company_facts_cache: dict[str, dict[str, any]] = {}
 
     def _merge_data(self, existing: list[dict] | None, new_data: list[dict], key_field: str) -> list[dict]:
         """Merge existing and new data, avoiding duplicates based on a key field."""
@@ -60,6 +63,30 @@ class Cache:
     def set_company_news(self, ticker: str, data: list[dict[str, any]]):
         """Append new company news to cache."""
         self._company_news_cache[ticker] = self._merge_data(self._company_news_cache.get(ticker), data, key_field="date")
+
+    def get_economic_indicators(self, key: str) -> dict[str, any] | None:
+        """Get cached economic indicators if available."""
+        return self._economic_indicators_cache.get(key)
+
+    def set_economic_indicators(self, key: str, data: dict[str, any]):
+        """Set economic indicators in cache."""
+        self._economic_indicators_cache[key] = data
+
+    def get_fx_rates(self, key: str) -> dict[str, any] | None:
+        """Get cached FX rates if available."""
+        return self._fx_rates_cache.get(key)
+
+    def set_fx_rates(self, key: str, data: dict[str, any]):
+        """Set FX rates in cache."""
+        self._fx_rates_cache[key] = data
+
+    def get_company_facts(self, key: str) -> dict[str, any] | None:
+        """Get cached company facts if available."""
+        return self._company_facts_cache.get(key)
+
+    def set_company_facts(self, key: str, data: dict[str, any]):
+        """Set company facts in cache."""
+        self._company_facts_cache[key] = data
 
 
 # Global cache instance
