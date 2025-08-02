@@ -54,9 +54,9 @@ Examples:
 
     parser.add_argument("--show-reasoning", action="store_true", help="Show detailed reasoning from each agent")
 
-    parser.add_argument("--model-name", type=str, default="gpt-4o-mini" if not parser.parse_args().ollama else "llama3.1:8b", help="LLM model to use")
+    parser.add_argument("--model-name", type=str, default="haiku-3.5", help="LLM model to use (e.g. gpt-4, haiku-3.5, llama3.1:8b)")
 
-    parser.add_argument("--model-provider", type=str, default="OpenAI" if not parser.parse_args().ollama else "Ollama", help="LLM provider to use")
+    parser.add_argument("--model-provider", type=str, default="Anthropic", help="LLM provider to use (e.g. OpenAI, Anthropic, Ollama)")
 
     parser.add_argument("--sa-only", action="store_true", help="Use only SA-specific agents (exclude global agents)")
 
