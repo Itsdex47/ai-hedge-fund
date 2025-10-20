@@ -1,4 +1,4 @@
-"""Simplified LLM Model Configuration - Top 3 providers only."""
+"""Simplified LLM Model Configuration - Latest models + Your Ollama setup."""
 
 import os
 import json
@@ -35,7 +35,7 @@ class LLMModel(BaseModel):
     def has_json_mode(self) -> bool:
         """Check if the model supports JSON mode"""
         if self.is_ollama():
-            return "llama3" in self.model_name or "neural-chat" in self.model_name
+            return "llama3" in self.model_name or "gpt-oss" in self.model_name
         return True
 
     def is_ollama(self) -> bool:
@@ -43,17 +43,28 @@ class LLMModel(BaseModel):
         return self.provider == ModelProvider.OLLAMA
 
 
-# Simplified model list - top performing models only
+# Latest and greatest models - Updated January 2025
 AVAILABLE_MODELS = [
-    LLMModel(display_name="GPT-4o (OpenAI) - Best Overall", model_name="gpt-4o", provider=ModelProvider.OPENAI),
-    LLMModel(display_name="GPT-4o Mini (OpenAI) - Fast & Cheap", model_name="gpt-4o-mini", provider=ModelProvider.OPENAI),
-    LLMModel(display_name="Claude 3.5 Sonnet (Anthropic) - Best Reasoning", model_name="claude-3-5-sonnet-latest", provider=ModelProvider.ANTHROPIC),
-    LLMModel(display_name="Claude 3.5 Haiku (Anthropic) - Fast", model_name="claude-3-5-haiku-latest", provider=ModelProvider.ANTHROPIC),
+    # OpenAI - Latest GPT-4 models
+    LLMModel(display_name="GPT-4o (Latest) - Best Overall", model_name="gpt-4o", provider=ModelProvider.OPENAI),
+    LLMModel(display_name="GPT-4o Mini - Fast & Cheap", model_name="gpt-4o-mini", provider=ModelProvider.OPENAI),
+    LLMModel(display_name="o1 (Reasoning) - Advanced", model_name="o1", provider=ModelProvider.OPENAI),
+    LLMModel(display_name="o1-mini (Reasoning) - Faster", model_name="o1-mini", provider=ModelProvider.OPENAI),
+
+    # Anthropic - Latest Claude models (Sonnet 4 is newest as of Jan 2025)
+    LLMModel(display_name="Claude Sonnet 4 (Latest) - Best Reasoning", model_name="claude-sonnet-4-20250514", provider=ModelProvider.ANTHROPIC),
+    LLMModel(display_name="Claude Sonnet 3.7 - Very Good", model_name="claude-3-7-sonnet-20250219", provider=ModelProvider.ANTHROPIC),
+    LLMModel(display_name="Claude Opus 4 - Most Powerful", model_name="claude-opus-4-20250514", provider=ModelProvider.ANTHROPIC),
 ]
 
+# Your locally installed Ollama models
 OLLAMA_MODELS = [
-    LLMModel(display_name="Llama 3.1 8B (Local)", model_name="llama3.1:8b", provider=ModelProvider.OLLAMA),
-    LLMModel(display_name="Llama 3.1 70B (Local)", model_name="llama3.1:70b", provider=ModelProvider.OLLAMA),
+    LLMModel(display_name="GPT-OSS 20B Cloud (Your Model) - Recommended", model_name="gpt-oss:20b-cloud", provider=ModelProvider.OLLAMA),
+    LLMModel(display_name="GPT-OSS 20B (Your Model)", model_name="gpt-oss:20b", provider=ModelProvider.OLLAMA),
+    LLMModel(display_name="Llama 3.1 (Your Model)", model_name="llama3.1:latest", provider=ModelProvider.OLLAMA),
+    LLMModel(display_name="Qwen 3 30B (Your Model)", model_name="qwen3:30b", provider=ModelProvider.OLLAMA),
+    LLMModel(display_name="Gemma 3 12B (Your Model)", model_name="gemma3:12b", provider=ModelProvider.OLLAMA),
+    LLMModel(display_name="DeepSeek R1 8B (Your Model)", model_name="deepseek-r1:8b", provider=ModelProvider.OLLAMA),
     LLMModel(display_name="Custom Ollama Model", model_name="-", provider=ModelProvider.OLLAMA),
 ]
 
@@ -100,6 +111,7 @@ def get_model(model_name: str, model_provider: ModelProvider, api_keys: dict = N
     elif model_provider == ModelProvider.OLLAMA:
         ollama_host = os.getenv("OLLAMA_HOST", "localhost")
         base_url = os.getenv("OLLAMA_BASE_URL", f"http://{ollama_host}:11434")
+        print(f"🤖 Using Ollama model: {model_name}")
         return ChatOllama(model=model_name, base_url=base_url)
 
     else:

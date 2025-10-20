@@ -216,17 +216,27 @@ Get your key at: https://financialdatasets.ai/
 
 ### Supported (Choose ONE):
 
-1. **OpenAI** (Recommended)
-   - GPT-4o - Best overall
-   - GPT-4o-mini - Fast & cheap
+1. **OpenAI** (Recommended for API use)
+   - GPT-4o (Latest) - Best overall quality
+   - GPT-4o Mini - Fast & cheap
+   - o1 (Reasoning) - Advanced reasoning
+   - o1-mini - Faster reasoning
 
-2. **Anthropic**
-   - Claude 3.5 Sonnet - Best reasoning
-   - Claude 3.5 Haiku - Fast
+2. **Anthropic** (Best reasoning)
+   - Claude Sonnet 4 (Latest) - Best reasoning available
+   - Claude Sonnet 3.7 - Very good performance
+   - Claude Opus 4 - Most powerful
 
-3. **Ollama** (Free, Local)
-   - Llama 3.1 - Run locally
-   - No API key needed
+3. **Ollama** (Free, Local, Private - RECOMMENDED)
+   - **GPT-OSS 20B Cloud** - Your installed model (Recommended!)
+   - GPT-OSS 20B - Alternative version
+   - Llama 3.1 - Fast and capable
+   - Qwen 3 30B - Large context window
+   - Gemma 3 12B - Good for analysis
+   - DeepSeek R1 8B - Reasoning focused
+   - No API key or internet needed
+   - 100% private
+   - No API costs!
 
 ---
 
