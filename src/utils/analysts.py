@@ -7,6 +7,7 @@ from src.agents.sentiment import sentiment_analyst_agent
 from src.agents.technicals import technical_analyst_agent
 from src.agents.valuation import valuation_analyst_agent
 from src.agents.warren_buffett import warren_buffett_agent
+from src.agents.crypto_analyst import crypto_analyst_agent
 
 # Simplified analyst configuration - 6 core analysts only
 ANALYST_CONFIG = {
@@ -58,6 +59,14 @@ ANALYST_CONFIG = {
         "type": "analyst",
         "order": 5,
     },
+    "crypto_analyst": {
+        "display_name": "Crypto Analyst",
+        "description": "Digital Assets Specialist",
+        "investing_style": "Analyzes crypto assets with institutional perspective: adoption signals, volatility, supply dynamics",
+        "agent_func": crypto_analyst_agent,
+        "type": "analyst",
+        "order": 6,
+    },
 }
 
 # Display order for analyst selection
@@ -68,6 +77,7 @@ ANALYST_ORDER = [
     ("Fundamentals Analyst", "fundamentals_analyst"),
     ("Sentiment Analyst", "sentiment_analyst"),
     ("Valuation Analyst", "valuation_analyst"),
+    ("Crypto Analyst", "crypto_analyst"),
 ]
 
 # Strategy presets
@@ -87,9 +97,14 @@ STRATEGIES = {
         "description": "Mix of value, growth, and technical analysis",
         "analysts": ["warren_buffett", "peter_lynch", "technical_analyst", "valuation_analyst"],
     },
+    "crypto": {
+        "name": "Crypto Focus",
+        "description": "Cryptocurrency analysis with institutional perspective",
+        "analysts": ["crypto_analyst", "sentiment_analyst", "technical_analyst"],
+    },
     "all": {
         "name": "All Analysts",
-        "description": "Use all 6 analysts for comprehensive analysis",
+        "description": "Use all 7 analysts for comprehensive analysis",
         "analysts": list(ANALYST_CONFIG.keys()),
     },
 }
