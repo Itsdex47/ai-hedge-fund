@@ -12,6 +12,7 @@ import pandas as pd
 from src.backtester import Backtester
 from src.config.sa_market_config import get_sa_config, TOP_STOCKS
 from src.data.sa_data_adapter import get_sa_data_adapter
+from src.main import run_hedge_fund
 
 # Load environment variables
 load_dotenv()
@@ -93,9 +94,6 @@ Examples:
     print(f"🇿🇦 SA-Only Mode: {args.sa_only}")
     print("-" * 60)
 
-    # Initialize portfolio
-    portfolio = {"total_cash": args.initial_capital, "positions": {}}
-
     # Select agents based on SA-only mode
     if args.sa_only:
         selected_analysts = ["sa_market_analyst", "sa_regulatory_compliance", "sa_currency_risk", "portfolio_manager"]
@@ -106,16 +104,29 @@ Examples:
 
     try:
         print("🔄 Running SA Market Backtest...")
-        backtester = Backtester(tickers=valid_tickers, start_date=args.start_date, end_date=args.end_date, portfolio=portfolio, show_reasoning=args.show_reasoning, selected_analysts=selected_analysts, model_name=args.model_name, model_provider=args.model_provider)
-        results = backtester.run_backtest()
+        backtester = Backtester(
+            agent=run_hedge_fund,
+            tickers=valid_tickers,
+            start_date=args.start_date,
+            end_date=args.end_date,
+            initial_capital=args.initial_capital,
+            model_name=args.model_name,
+            model_provider=args.model_provider,
+            selected_analysts=selected_analysts,
+            initial_margin_requirement=0.0,
+        )
+        performance_metrics = backtester.run_backtest()
+
+        # Analyze performance to get detailed results
+        performance_df = backtester.analyze_performance()
 
         # Display SA-specific backtest results
         print("\n" + "=" * 60)
         print("🇿🇦 SOUTH AFRICAN BACKTEST RESULTS")
         print("=" * 60)
 
-        if "portfolio_value" in results:
-            final_value = results["portfolio_value"]
+        if len(backtester.portfolio_values) > 0:
+            final_value = backtester.portfolio_values[-1]["Portfolio Value"]
             initial_value = args.initial_capital
             total_return = ((final_value - initial_value) / initial_value) * 100
 
@@ -130,26 +141,15 @@ Examples:
             usd_final = final_value / zar_usd_rate
             print(f"  USD Equivalent: ${usd_initial:,.2f} → ${usd_final:,.2f}")
 
-        if "trades" in results:
-            trades = results["trades"]
-            print(f"\n📊 Trading Activity:")
-            print(f"  Total Trades: {len(trades)}")
-
-            # Analyze trades by ticker
-            ticker_trades = {}
-            for trade in trades:
-                ticker = trade.get("ticker", "Unknown")
-                if ticker not in ticker_trades:
-                    ticker_trades[ticker] = {"buys": 0, "sells": 0}
-
-                action = trade.get("action", "").lower()
-                if "buy" in action:
-                    ticker_trades[ticker]["buys"] += 1
-                elif "sell" in action:
-                    ticker_trades[ticker]["sells"] += 1
-
-            for ticker, trade_counts in ticker_trades.items():
-                print(f"    {ticker}: {trade_counts['buys']} buys, {trade_counts['sells']} sells")
+            # Display performance metrics
+            if performance_metrics:
+                print(f"\n📈 Performance Metrics:")
+                if performance_metrics.get("sharpe_ratio") is not None:
+                    print(f"  Sharpe Ratio: {performance_metrics['sharpe_ratio']:.2f}")
+                if performance_metrics.get("sortino_ratio") is not None:
+                    print(f"  Sortino Ratio: {performance_metrics['sortino_ratio']:.2f}")
+                if performance_metrics.get("max_drawdown") is not None:
+                    print(f"  Max Drawdown: {performance_metrics['max_drawdown']:.2f}%")
 
         # SA Market Context
         sa_config = get_sa_config()
