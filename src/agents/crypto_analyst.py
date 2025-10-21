@@ -152,7 +152,7 @@ def crypto_analyst_agent(state: AgentState):
             import json
             analysis = json.loads(response.content)
 
-            from src.agents.state import AnalystSignal
+            from src.data.models import AnalystSignal
             crypto_signals[crypto_symbol] = AnalystSignal(
                 signal=analysis["signal"].upper(),
                 confidence=analysis["confidence"] / 100.0,
@@ -161,7 +161,7 @@ def crypto_analyst_agent(state: AgentState):
 
         except Exception as e:
             print(f"Error in crypto analysis for {crypto_symbol}: {e}")
-            from src.agents.state import AnalystSignal
+            from src.data.models import AnalystSignal
             crypto_signals[crypto_symbol] = AnalystSignal(
                 signal="NEUTRAL",
                 confidence=0.0,

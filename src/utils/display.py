@@ -43,8 +43,14 @@ def print_trading_output(result: dict) -> None:
 
             signal = signals[ticker]
             agent_name = agent.replace("_agent", "").replace("_", " ").title()
-            signal_type = signal.get("signal", "").upper()
-            confidence = signal.get("confidence", 0)
+
+            # Handle both AnalystSignal objects and dict signals
+            if hasattr(signal, 'signal'):  # AnalystSignal object
+                signal_type = (signal.signal or "").upper()
+                confidence = (signal.confidence or 0) * 100  # Convert to percentage
+            else:  # dict signal
+                signal_type = signal.get("signal", "").upper()
+                confidence = signal.get("confidence", 0)
 
             signal_color = {
                 "BULLISH": Fore.GREEN,
@@ -54,8 +60,14 @@ def print_trading_output(result: dict) -> None:
             
             # Get reasoning if available
             reasoning_str = ""
-            if "reasoning" in signal and signal["reasoning"]:
+            if hasattr(signal, 'reasoning'):  # AnalystSignal object
+                reasoning = signal.reasoning
+            elif "reasoning" in signal:  # dict signal
                 reasoning = signal["reasoning"]
+            else:
+                reasoning = None
+
+            if reasoning:
                 
                 # Handle different types of reasoning (string, dict, etc.)
                 if isinstance(reasoning, str):

@@ -60,7 +60,12 @@ def portfolio_management_agent(state: AgentState, agent_id: str = "portfolio_man
         for agent, signals in analyst_signals.items():
             # Skip all risk management agents (they have different signal structure)
             if not agent.startswith("risk_management_agent") and ticker in signals:
-                ticker_signals[agent] = {"signal": signals[ticker]["signal"], "confidence": signals[ticker]["confidence"]}
+                # Handle both AnalystSignal objects and dict signals
+                signal_obj = signals[ticker]
+                if hasattr(signal_obj, 'signal'):  # AnalystSignal object
+                    ticker_signals[agent] = {"signal": signal_obj.signal, "confidence": signal_obj.confidence}
+                else:  # dict signal
+                    ticker_signals[agent] = {"signal": signal_obj["signal"], "confidence": signal_obj["confidence"]}
         signals_by_ticker[ticker] = ticker_signals
 
     # Add current_prices to the state data so it's available throughout the workflow

@@ -8,8 +8,9 @@ from src.agents.technicals import technical_analyst_agent
 from src.agents.valuation import valuation_analyst_agent
 from src.agents.warren_buffett import warren_buffett_agent
 from src.agents.crypto_analyst import crypto_analyst_agent
+from src.agents.macro_economist import macro_economist_agent
 
-# Simplified analyst configuration - 6 core analysts only
+# Simplified analyst configuration - 7 core analysts + macro
 ANALYST_CONFIG = {
     "warren_buffett": {
         "display_name": "Warren Buffett",
@@ -67,6 +68,14 @@ ANALYST_CONFIG = {
         "type": "analyst",
         "order": 6,
     },
+    "macro_economist": {
+        "display_name": "Macro Economist",
+        "description": "Chief Economist & Market Strategist",
+        "investing_style": "Analyzes macroeconomic conditions, Fed policy, business cycles, and provides sector rotation guidance",
+        "agent_func": macro_economist_agent,
+        "type": "analyst",
+        "order": 7,
+    },
 }
 
 # Display order for analyst selection
@@ -78,6 +87,7 @@ ANALYST_ORDER = [
     ("Sentiment Analyst", "sentiment_analyst"),
     ("Valuation Analyst", "valuation_analyst"),
     ("Crypto Analyst", "crypto_analyst"),
+    ("Macro Economist", "macro_economist"),
 ]
 
 # Strategy presets
@@ -102,9 +112,14 @@ STRATEGIES = {
         "description": "Cryptocurrency analysis with institutional perspective",
         "analysts": ["crypto_analyst", "sentiment_analyst", "technical_analyst"],
     },
+    "macro": {
+        "name": "Macro-Driven",
+        "description": "Market timing based on macroeconomic conditions",
+        "analysts": ["macro_economist", "warren_buffett", "technical_analyst"],
+    },
     "all": {
         "name": "All Analysts",
-        "description": "Use all 7 analysts for comprehensive analysis",
+        "description": "Use all 8 analysts for comprehensive analysis",
         "analysts": list(ANALYST_CONFIG.keys()),
     },
 }
