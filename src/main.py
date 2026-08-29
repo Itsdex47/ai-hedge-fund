@@ -158,7 +158,7 @@ Available Strategies:
   all         - Use all 6 analysts
         """
     )
-    parser.add_argument("--tickers", type=str, required=True, help="Comma-separated list of stock ticker symbols")
+    parser.add_argument("--tickers", type=str, help="Comma-separated list of stock ticker symbols")
     parser.add_argument("--strategy", type=str, choices=list(STRATEGIES.keys()), help="Strategy preset (conservative/growth/balanced/all)")
     parser.add_argument("--initial-cash", type=float, default=100000.0, help="Initial cash position (default: $100,000)")
     parser.add_argument("--margin-requirement", type=float, default=0.0, help="Margin requirement (default: 0.0)")
@@ -166,11 +166,73 @@ Available Strategies:
     parser.add_argument("--end-date", type=str, help="End date (YYYY-MM-DD). Defaults to today")
     parser.add_argument("--show-reasoning", action="store_true", help="Show detailed reasoning from each agent")
     parser.add_argument("--ollama", action="store_true", help="Use local Ollama models")
+    parser.add_argument("--profile", type=str, help="User profile name for personalized analysis (e.g., 'Conservative Retirement')")
+    parser.add_argument("--list-profiles", action="store_true", help="List available user profiles and exit")
 
     args = parser.parse_args()
 
+    # Handle --list-profiles
+    if args.list_profiles:
+        from src.user.profile import list_profiles
+        profiles = list_profiles()
+        if profiles:
+            print(f"\n{Fore.CYAN}📋 Available Profiles:{Style.RESET_ALL}\n")
+            for profile_name in profiles:
+                print(f"  • {profile_name}")
+            print(f"\n{Fore.WHITE}Usage: python src/main.py --tickers AAPL --profile \"Conservative Retirement\"{Style.RESET_ALL}\n")
+        else:
+            print(f"\n{Fore.YELLOW}No profiles found. Create one with:{Style.RESET_ALL}")
+            print(f"{Fore.WHITE}  python -c 'from src.user.profile import create_default_profiles; create_default_profiles()'{Style.RESET_ALL}\n")
+        sys.exit(0)
+
+    # Check that tickers are provided
+    if not args.tickers:
+        print(f"\n{Fore.RED}❌ Error: --tickers argument is required{Style.RESET_ALL}\n")
+        print(f"{Fore.WHITE}Usage: python src/main.py --tickers AAPL,MSFT{Style.RESET_ALL}\n")
+        sys.exit(1)
+
     # Parse tickers from comma-separated string
     tickers = [ticker.strip().upper() for ticker in args.tickers.split(",")]
+
+    # Load user profile if specified
+    user_profile = None
+    preference_filter = None
+    if args.profile:
+        from src.user.profile import get_profile
+        from src.user.preferences import PreferenceFilter
+
+        user_profile = get_profile(args.profile)
+        if not user_profile:
+            print(f"\n{Fore.RED}❌ Error: Profile '{args.profile}' not found.{Style.RESET_ALL}")
+            print(f"{Fore.WHITE}Use --list-profiles to see available profiles.{Style.RESET_ALL}\n")
+            sys.exit(1)
+
+        preference_filter = PreferenceFilter(user_profile)
+
+        # Display profile info
+        print(f"\n{Fore.CYAN}👤 Using Profile: {user_profile.profile_name}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}  Risk Tolerance: {user_profile.risk_tolerance.title()}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}  Time Horizon: {user_profile.time_horizon} years{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}  Primary Objective: {user_profile.primary_objective.replace('_', ' ').title()}{Style.RESET_ALL}")
+
+        if user_profile.exclude_sectors:
+            print(f"{Fore.YELLOW}  ⚠️  Excluding sectors: {', '.join(user_profile.exclude_sectors)}{Style.RESET_ALL}")
+
+        # Filter tickers based on preferences
+        filtered_tickers = []
+        for ticker in tickers:
+            is_allowed, reason = preference_filter.is_ticker_allowed(ticker)
+            if is_allowed:
+                filtered_tickers.append(ticker)
+            else:
+                print(f"{Fore.RED}  ❌ Filtered out {ticker}: {reason}{Style.RESET_ALL}")
+
+        if not filtered_tickers:
+            print(f"\n{Fore.RED}❌ All tickers were filtered out by your preferences.{Style.RESET_ALL}\n")
+            sys.exit(1)
+
+        tickers = filtered_tickers
+        print()
 
     # Select analysts based on strategy or interactive mode
     selected_analysts = None

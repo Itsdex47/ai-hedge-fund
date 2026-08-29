@@ -139,6 +139,35 @@ poetry run python src/main.py --tickers AAPL --start-date 2024-01-01 --end-date 
 poetry run python src/main.py --tickers AAPL --ollama
 ```
 
+### 🎯 NEW: Personalized Analysis with User Profiles
+```bash
+# List available profiles
+poetry run python src/main.py --list-profiles
+
+# Use a profile for personalized, values-based investing
+poetry run python src/main.py --tickers AAPL,MSFT,GOOGL --profile "Balanced ESG" --strategy balanced
+
+# Create default example profiles (Conservative, Aggressive, ESG)
+python -c 'from src.user.profile import create_default_profiles; create_default_profiles()'
+```
+
+**Profile Features:**
+- ✅ **Risk-Based Position Sizing** - Automatic position limits based on risk tolerance
+- ✅ **ESG/Values Filtering** - Exclude tobacco, fossil fuels, weapons, gambling, etc.
+- ✅ **Sector Concentration Limits** - Prevent over-concentration in single sectors
+- ✅ **Crypto Allocation Caps** - Set maximum percentage for crypto holdings
+- ✅ **Tax Optimization Preferences** - Enable/disable tax loss harvesting
+- ✅ **Investment Goals** - Align recommendations with specific financial objectives
+
+**Example: ESG Investor**
+```bash
+# This will filter out XOM (fossil fuels) and MO (tobacco)
+poetry run python src/main.py --tickers AAPL,XOM,MO --profile "Balanced ESG" --strategy conservative
+# Output: ❌ Filtered out XOM: excluded due to fossil_fuels category
+#         ❌ Filtered out MO: excluded due to tobacco category
+#         ✅ Analyzing only AAPL
+```
+
 ---
 
 ## 🧪 Backtesting
