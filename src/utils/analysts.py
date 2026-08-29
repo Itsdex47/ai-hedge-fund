@@ -1,56 +1,21 @@
-"""Constants and utilities related to analysts configuration - SIMPLIFIED VERSION."""
+"""Constants and utilities related to analyst configuration.
 
-from src.agents import portfolio_manager
+Scoped to the valuation-challenge pivot: the registry holds the methods used
+to reconstruct an independent value, not trading signal generators. Each entry
+becomes a graph node via get_analyst_nodes().
+"""
+
 from src.agents.fundamentals import fundamentals_analyst_agent
-from src.agents.peter_lynch import peter_lynch_agent
-from src.agents.sentiment import sentiment_analyst_agent
-from src.agents.technicals import technical_analyst_agent
 from src.agents.valuation import valuation_analyst_agent
-from src.agents.warren_buffett import warren_buffett_agent
-from src.agents.crypto_analyst import crypto_analyst_agent
-from src.agents.macro_economist import macro_economist_agent
 
-# Simplified analyst configuration - 7 core analysts + macro
 ANALYST_CONFIG = {
-    "warren_buffett": {
-        "display_name": "Warren Buffett",
-        "description": "The Oracle of Omaha",
-        "investing_style": "Value investing focused on strong fundamentals and competitive advantages",
-        "agent_func": warren_buffett_agent,
-        "type": "analyst",
-        "order": 0,
-    },
-    "peter_lynch": {
-        "display_name": "Peter Lynch",
-        "description": "The 10-Bagger Hunter",
-        "investing_style": "Growth at reasonable price - 'buy what you know' strategy",
-        "agent_func": peter_lynch_agent,
-        "type": "analyst",
-        "order": 1,
-    },
-    "technical_analyst": {
-        "display_name": "Technical Analyst",
-        "description": "Chart Pattern Specialist",
-        "investing_style": "Technical analysis using charts, trends, and momentum indicators",
-        "agent_func": technical_analyst_agent,
-        "type": "analyst",
-        "order": 2,
-    },
     "fundamentals_analyst": {
         "display_name": "Fundamentals Analyst",
         "description": "Financial Statement Specialist",
         "investing_style": "Deep dive into financial statements and metrics",
         "agent_func": fundamentals_analyst_agent,
         "type": "analyst",
-        "order": 3,
-    },
-    "sentiment_analyst": {
-        "display_name": "Sentiment Analyst",
-        "description": "Market Sentiment Specialist",
-        "investing_style": "Analyzes market sentiment, news, and insider trading",
-        "agent_func": sentiment_analyst_agent,
-        "type": "analyst",
-        "order": 4,
+        "order": 0,
     },
     "valuation_analyst": {
         "display_name": "Valuation Analyst",
@@ -58,68 +23,26 @@ ANALYST_CONFIG = {
         "investing_style": "DCF, owner earnings, and other valuation models",
         "agent_func": valuation_analyst_agent,
         "type": "analyst",
-        "order": 5,
-    },
-    "crypto_analyst": {
-        "display_name": "Crypto Analyst",
-        "description": "Digital Assets Specialist",
-        "investing_style": "Analyzes crypto assets with institutional perspective: adoption signals, volatility, supply dynamics",
-        "agent_func": crypto_analyst_agent,
-        "type": "analyst",
-        "order": 6,
-    },
-    "macro_economist": {
-        "display_name": "Macro Economist",
-        "description": "Chief Economist & Market Strategist",
-        "investing_style": "Analyzes macroeconomic conditions, Fed policy, business cycles, and provides sector rotation guidance",
-        "agent_func": macro_economist_agent,
-        "type": "analyst",
-        "order": 7,
+        "order": 1,
     },
 }
 
 # Display order for analyst selection
 ANALYST_ORDER = [
-    ("Warren Buffett", "warren_buffett"),
-    ("Peter Lynch", "peter_lynch"),
-    ("Technical Analyst", "technical_analyst"),
     ("Fundamentals Analyst", "fundamentals_analyst"),
-    ("Sentiment Analyst", "sentiment_analyst"),
     ("Valuation Analyst", "valuation_analyst"),
-    ("Crypto Analyst", "crypto_analyst"),
-    ("Macro Economist", "macro_economist"),
 ]
 
 # Strategy presets
 STRATEGIES = {
-    "conservative": {
-        "name": "Conservative",
-        "description": "Value-focused with strong fundamentals",
-        "analysts": ["warren_buffett", "fundamentals_analyst", "valuation_analyst"],
-    },
-    "growth": {
-        "name": "Growth",
-        "description": "Growth opportunities with momentum",
-        "analysts": ["peter_lynch", "technical_analyst", "sentiment_analyst"],
-    },
-    "balanced": {
-        "name": "Balanced",
-        "description": "Mix of value, growth, and technical analysis",
-        "analysts": ["warren_buffett", "peter_lynch", "technical_analyst", "valuation_analyst"],
-    },
-    "crypto": {
-        "name": "Crypto Focus",
-        "description": "Cryptocurrency analysis with institutional perspective",
-        "analysts": ["crypto_analyst", "sentiment_analyst", "technical_analyst"],
-    },
-    "macro": {
-        "name": "Macro-Driven",
-        "description": "Market timing based on macroeconomic conditions",
-        "analysts": ["macro_economist", "warren_buffett", "technical_analyst"],
+    "valuation": {
+        "name": "Valuation",
+        "description": "Multi-method intrinsic value reconstruction",
+        "analysts": ["fundamentals_analyst", "valuation_analyst"],
     },
     "all": {
         "name": "All Analysts",
-        "description": "Use all 8 analysts for comprehensive analysis",
+        "description": "Use every registered method",
         "analysts": list(ANALYST_CONFIG.keys()),
     },
 }

@@ -1,1 +1,1 @@
-"""Agents package - Simplified to 6 core analysts."""
+"""Agents package - valuation methods used by the challenge engine."""

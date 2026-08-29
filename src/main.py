@@ -141,25 +141,21 @@ if __name__ == "__main__":
         epilog="""
 Examples:
   # Use a strategy preset
-  python src/main.py --tickers AAPL --strategy conservative
-  python src/main.py --tickers TSLA --strategy growth
-  python src/main.py --tickers MSFT --strategy balanced
+  python src/main.py --tickers AAPL --strategy valuation
 
-  # Use all analysts (default)
+  # Use all registered methods (default)
   python src/main.py --tickers AAPL,MSFT,GOOGL
 
   # Show detailed reasoning
   python src/main.py --tickers AAPL --show-reasoning
 
 Available Strategies:
-  conservative - Value-focused (Buffett, Fundamentals, Valuation)
-  growth      - Growth-focused (Lynch, Technical, Sentiment)
-  balanced    - Mix of all approaches
-  all         - Use all 6 analysts
+  valuation - Multi-method intrinsic value reconstruction
+  all       - Use every registered method
         """
     )
     parser.add_argument("--tickers", type=str, help="Comma-separated list of stock ticker symbols")
-    parser.add_argument("--strategy", type=str, choices=list(STRATEGIES.keys()), help="Strategy preset (conservative/growth/balanced/all)")
+    parser.add_argument("--strategy", type=str, choices=list(STRATEGIES.keys()), help="Strategy preset (valuation/all)")
     parser.add_argument("--initial-cash", type=float, default=100000.0, help="Initial cash position (default: $100,000)")
     parser.add_argument("--margin-requirement", type=float, default=0.0, help="Margin requirement (default: 0.0)")
     parser.add_argument("--start-date", type=str, help="Start date (YYYY-MM-DD). Defaults to 3 months ago")
